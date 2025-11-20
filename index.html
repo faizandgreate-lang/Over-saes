@@ -2,74 +2,85 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Faizan CV Generator</title>
+<title>Curriculum Vitae Generator</title>
 
-<!-- JS Libraries -->
+<!-- JS Libs -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- STYLE -->
 <style>
   body {
     font-family: "Poppins", Arial, sans-serif;
     margin: 0;
-    background: #eef2f5;
+    background: #d9e9ff;
+    backdrop-filter: blur(8px);
   }
 
   .form-container {
-    width: 80%;
+    width: 85%;
     max-width: 900px;
-    background: #fff;
-    padding: 20px;
-    margin: 20px auto;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    margin: 25px auto;
+    padding: 25px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
   }
 
   input, textarea {
-    width: 100%; padding: 10px; margin: 10px 0;
-    border: 1px solid #aaa; border-radius: 5px;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #90b7ff;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.8);
   }
 
   .btn {
-    padding: 12px 18px;
-    background: #004aad;
+    padding: 12px 20px;
+    background: #3483eb;
     border: none;
     color: white;
     font-weight: bold;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 12px;
   }
 
-  /* CV Layout */
+  /* CV LAYOUT */
   .cv-container {
-    width: 210mm; min-height: 297mm;
-    background: white;
-    margin: 30px auto;
+    width: 210mm; 
+    min-height: 297mm;
+    margin: 35px auto;
     display: none;
-    position: relative;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    display: flex;
     flex-direction: row;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
   }
 
-  /* BLUE SIDEBAR */
+  /* Sidebar */
   .sidebar {
-    width: 30%;
-    background: #003b82;
-    color: #ffffff;
+    width: 32%;
     padding: 30px;
+    background: linear-gradient(180deg, #4da3ff, #0057c2);
+    color: #fff;
+    border-radius: 12px 0 0 12px;
   }
 
   .sidebar img {
-    width: 120px; height: 120px;
-    border-radius: 50%; object-fit: cover;
-    border: 3px solid white; margin-bottom: 20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    display: block;
+    margin: 10px auto 20px;
   }
 
   .sidebar h2 {
-    font-size: 20px; margin-top: 30px;
+    font-size: 20px;
+    margin-top: 25px;
     border-bottom: 1px solid rgba(255,255,255,0.3);
     padding-bottom: 5px;
   }
@@ -80,20 +91,19 @@
 
   /* MAIN CONTENT */
   .main {
-    width: 70%;
+    width: 68%;
     padding: 40px;
-    color: #333;
   }
 
   .main h1 {
-    font-size: 30px;
-    margin-bottom: 0;
+    font-size: 32px;
+    margin-bottom: 5px;
   }
 
   .main h3 {
-    background: #dce4ee;
+    background: rgba(90,150,255,0.2);
     padding: 8px;
-    border-left: 5px solid #004aad;
+    border-left: 5px solid #0057c2;
     margin-top: 25px;
     font-size: 18px;
   }
@@ -103,44 +113,60 @@
 
   .footer-brand {
     position: absolute;
-    bottom: 10px; right: 20px;
+    bottom: 10px;
+    right: 20px;
     font-size: 12px;
-    opacity: 0.7;
-    color: #444;
+    opacity: 0.6;
   }
 </style>
 </head>
 <body>
 
 
-<!-- === INPUT FORM === -->
+<!-- ===== INPUT FORM ===== -->
 <div class="form-container">
-  <h2>Faizan CV Generator</h2>
+  <h2 style="text-align:center;">Curriculum Vitae Generator</h2>
 
   <input type="file" id="photoInput" accept="image/*">
-  <input type="text" id="nameInput" placeholder="Full Name">
-  <input type="text" id="jobInput" placeholder="Job Title">
-  <input type="text" id="phoneInput" placeholder="Phone Number">
-  <input type="text" id="emailInput" placeholder="Email">
-  <input type="text" id="addressInput" placeholder="Address">
-  <input type="text" id="nationalityInput" placeholder="Nationality">
-  <input type="text" id="passportInput" placeholder="Passport Number (Optional)">
-  <input type="text" id="linkedinInput" placeholder="LinkedIn Profile URL">
-  <input type="text" id="languagesInput" placeholder="Languages (e.g. English, Arabic)">
-  <input type="text" id="availabilityInput" placeholder="Availability Status (e.g. Immediately)">
-  <input type="text" id="visaInput" placeholder="Visa Status (e.g. Transferable, Visit Visa)">
 
-  <textarea id="summaryInput" placeholder="Professional Summary (multi-line supported)"></textarea>
-  <textarea id="educationInput" placeholder="Education (one per line)"></textarea>
-  <textarea id="experienceInput" placeholder="Work Experience (one per line)"></textarea>
-  <textarea id="skillsInput" placeholder="Skills (one per line)"></textarea>
+  <input type="text" id="nameInput" value="Faiej Khan">
+  <input type="text" id="jobInput" value="Applying for DCDP Indian Cuisine">
+  <input type="text" id="phoneInput" value="+96 - 553986479">
+  <input type="text" id="emailInput" value="faizkhan04.1995@gmail.com">
+  <input type="text" id="addressInput" value="Saudi Arabia">
+  <input type="text" id="nationalityInput" value="Indian">
+  <input type="text" id="passportInput" value="U6475645">
+  <input type="text" id="languagesInput" value="English, Hindi">
+
+  <textarea id="summaryInput">Seeking a suitable job position for substantial responsibility where my past and varied experience would fully support my career growth.
+
+Primarily responsible for preparing Indian cuisine and international hot section mise-en-place.</textarea>
+
+  <textarea id="experienceInput">• Worked as a commie in tree house India as industrial trainee (2012-2013)
+• Worked as commie 3 in tree house India (Apr 2013 - Apr 2014)
+• Worked as commie 2 in Rejecy Rathambore (Sept 2014 - Aug 2015)
+• Worked as commie 1 in Raj Palace Hotel (Oct 2015 - July 2017)
+• Worked as commie 1 in Rathambore Heritage Haweli Resort (Sept 2017 - Aug 2019)
+• Worked as commie 1 in Six Senses India (Nov 2021 - Apr 2022)
+• Worked as CDP in Lavesta Resort India (June 2022 - Nov 2023)
+• Currently at Red Sea Global Hospitality as Commie & Indian Cuisine Specialist (2024)</textarea>
+
+  <textarea id="educationInput">Intermediate from State Board of Intermediate Education, India</textarea>
+
+  <textarea id="skillsInput">Highly skilled Tandoori specialist
+Good knowledge in international buffet
+Strong communication skills
+Ability to manage kitchen operations
+Energetic and professional
+Very strong organizational skills</textarea>
 
   <button class="btn" onclick="generateCV()">Generate CV</button>
 </div>
 
 
 
-<!-- === CV TEMPLATE === -->
+
+<!-- ===== CV TEMPLATE ===== -->
 <div id="cv" class="cv-container">
 
   <!-- LEFT SIDEBAR -->
@@ -152,11 +178,9 @@
     <p><b>Email:</b> <span id="email"></span></p>
     <p><b>Address:</b> <span id="address"></span></p>
 
-    <h2>PERSONAL</h2>
+    <h2>PERSONAL DETAILS</h2>
     <p><b>Nationality:</b> <span id="nationality"></span></p>
     <p><b>Passport No:</b> <span id="passport"></span></p>
-    <p><b>Visa Status:</b> <span id="visa"></span></p>
-    <p><b>Availability:</b> <span id="availability"></span></p>
 
     <h2>SKILLS</h2>
     <ul id="skills"></ul>
@@ -165,10 +189,11 @@
     <p id="languages"></p>
   </div>
 
+
   <!-- MAIN CONTENT -->
   <div class="main">
     <h1 id="name"></h1>
-    <p style="font-size:16px; color:#004aad;"><b id="job"></b></p>
+    <p style="font-size:16px; color:#0057c2;"><b id="job"></b></p>
 
     <h3>Professional Summary</h3>
     <p id="summary"></p>
@@ -178,20 +203,15 @@
 
     <h3>Education</h3>
     <ul id="education"></ul>
-
-    <h3>Links</h3>
-    <p><span id="linkedin"></span></p>
-
-    <div class="footer-brand">
-      nexasafar@gmail.com
-    </div>
   </div>
 
 </div>
 
+
 <center>
   <button class="btn" id="downloadBtn" style="display:none;" onclick="downloadPDF()">Download PDF</button>
 </center>
+
 
 
 
@@ -200,7 +220,6 @@ function generateCV() {
   document.getElementById("cv").style.display = "flex";
   document.getElementById("downloadBtn").style.display = "inline-block";
 
-  // Photo
   const photoFile = document.getElementById("photoInput").files[0];
   if (photoFile) {
     const reader = new FileReader();
@@ -208,7 +227,6 @@ function generateCV() {
     reader.readAsDataURL(photoFile);
   }
 
-  // Basic fields
   const map = {
     name: "nameInput",
     job: "jobInput",
@@ -217,9 +235,6 @@ function generateCV() {
     address: "addressInput",
     nationality: "nationalityInput",
     passport: "passportInput",
-    linkedin: "linkedinInput",
-    availability: "availabilityInput",
-    visa: "visaInput",
     languages: "languagesInput",
     summary: "summaryInput"
   };
@@ -228,7 +243,6 @@ function generateCV() {
     document.getElementById(id).innerText = document.getElementById(map[id]).value;
   });
 
-  // Lists
   const makeList = (inputId, outputId) => {
     const items = document.getElementById(inputId).value.split("\n");
     document.getElementById(outputId).innerHTML =
@@ -253,7 +267,7 @@ async function downloadPDF() {
   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  pdf.save("CV.pdf");
+  pdf.save("Faizan_CV.pdf");
 }
 </script>
 

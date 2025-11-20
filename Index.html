@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CorporateMiles CV Generator</title>
+
+<!-- JS Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- STYLE -->
+<style>
+  body {
+    font-family: "Poppins", Arial, sans-serif;
+    margin: 0;
+    background: #eef2f5;
+  }
+
+  .form-container {
+    width: 80%;
+    max-width: 900px;
+    background: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  }
+
+  input, textarea {
+    width: 100%; padding: 10px; margin: 10px 0;
+    border: 1px solid #aaa; border-radius: 5px;
+  }
+
+  .btn {
+    padding: 12px 18px;
+    background: #004aad;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  /* CV Layout */
+  .cv-container {
+    width: 210mm; min-height: 297mm;
+    background: white;
+    margin: 30px auto;
+    display: none;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* BLUE SIDEBAR */
+  .sidebar {
+    width: 30%;
+    background: #003b82;
+    color: #ffffff;
+    padding: 30px;
+  }
+
+  .sidebar img {
+    width: 120px; height: 120px;
+    border-radius: 50%; object-fit: cover;
+    border: 3px solid white; margin-bottom: 20px;
+  }
+
+  .sidebar h2 {
+    font-size: 20px; margin-top: 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 5px;
+  }
+
+  .sidebar p, .sidebar li {
+    font-size: 14px;
+  }
+
+  /* MAIN CONTENT AREA */
+  .main {
+    width: 70%;
+    padding: 40px;
+    color: #333;
+  }
+
+  .main h1 {
+    font-size: 30px;
+    margin-bottom: 0;
+  }
+
+  .main h3 {
+    background: #dce4ee;
+    padding: 8px;
+    border-left: 5px solid #004aad;
+    margin-top: 25px;
+    font-size: 18px;
+  }
+
+  ul { list-style: none; padding-left: 0; }
+  li { margin-bottom: 6px; }
+
+  /* Footer Branding */
+  .footer-brand {
+    position: absolute;
+    bottom: 10px; right: 20px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+
+<!-- === INPUT FORM === -->
+<div class="form-container">
+  <h2>CorporateMiles CV Generator</h2>
+
+  <input type="file" id="photoInput" accept="image/*">
+  <input type="text" id="nameInput" placeholder="Full Name">
+  <input type="text" id="jobInput" placeholder="Job Title">
+  <input type="text" id="iqamaInput" placeholder="Iqama Number">
+  <input type="text" id="phoneInput" placeholder="Phone Number">
+  <input type="text" id="emailInput" placeholder="Email">
+  <input type="text" id="addressInput" placeholder="Address">
+
+  <textarea id="summaryInput" placeholder="Professional Summary (multi-line supported)"></textarea>
+  <textarea id="educationInput" placeholder="Education (one per line)"></textarea>
+  <textarea id="experienceInput" placeholder="Work Experience (one per line)"></textarea>
+  <textarea id="skillsInput" placeholder="Skills (one per line)"></textarea>
+
+  <button class="btn" onclick="generateCV()">Generate CV</button>
+</div>
+
+
+
+<!-- === CV TEMPLATE === -->
+<div id="cv" class="cv-container">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <img src="https://via.placeholder.com/150" id="photo">
+
+    <h2>CONTACT</h2>
+    <p><b>Iqama:</b> <span id="iqama"></span></p>
+    <p><b>Phone:</b> <span id="phone"></span></p>
+    <p><b>Email:</b> <span id="email"></span></p>
+    <p><b>Address:</b> <span id="address"></span></p>
+
+    <h2>SKILLS</h2>
+    <ul id="skills"></ul>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <h1 id="name"></h1>
+    <p style="font-size:16px; color:#004aad;"><b id="job"></b></p>
+
+    <h3>Professional Summary</h3>
+    <p id="summary"></p>
+
+    <h3>Work Experience</h3>
+    <ul id="experience"></ul>
+
+    <h3>Education</h3>
+    <ul id="education"></ul>
+
+    <div class="footer-brand">
+      CorporateMiles.Co | corporatemiles@gmail.com
+    </div>
+  </div>
+
+</div>
+
+<center>
+  <button class="btn" id="downloadBtn" style="display:none;" onclick="downloadPDF()">Download PDF</button>
+</center>
+
+
+
+<script>
+function generateCV() {
+  document.getElementById("cv").style.display = "flex";
+  document.getElementById("downloadBtn").style.display = "inline-block";
+
+  // Photo
+  const photoFile = document.getElementById("photoInput").files[0];
+  if (photoFile) {
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById("photo").src = e.target.result;
+    reader.readAsDataURL(photoFile);
+  }
+
+  // Input fields → Output
+  document.getElementById("name").innerText = document.getElementById("nameInput").value;
+  document.getElementById("job").innerText = document.getElementById("jobInput").value;
+  document.getElementById("iqama").innerText = document.getElementById("iqamaInput").value;
+  document.getElementById("phone").innerText = document.getElementById("phoneInput").value;
+  document.getElementById("email").innerText = document.getElementById("emailInput").value;
+  document.getElementById("address").innerText = document.getElementById("addressInput").value;
+  document.getElementById("summary").innerText = document.getElementById("summaryInput").value;
+
+  // Lists
+  const makeList = (inputId, outputId) => {
+    const items = document.getElementById(inputId).value.split("\n");
+    document.getElementById(outputId).innerHTML =
+      items.filter(e => e.trim() !== "").map(e => `<li>${e}</li>`).join("");
+  };
+
+  makeList("skillsInput", "skills");
+  makeList("educationInput", "education");
+  makeList("experienceInput", "experience");
+}
+
+
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const cv = document.getElementById("cv");
+
+  const canvas = await html2canvas(cv, { scale: 2 });
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+  pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  pdf.save("CorporateMiles-CV.pdf");
+}
+</script>
+
+</body>
+</html>

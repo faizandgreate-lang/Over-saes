@@ -78,7 +78,7 @@
     font-size: 14px;
   }
 
-  /* MAIN CONTENT AREA */
+  /* MAIN CONTENT */
   .main {
     width: 70%;
     padding: 40px;
@@ -101,12 +101,13 @@
   ul { list-style: none; padding-left: 0; }
   li { margin-bottom: 6px; }
 
-  /* Footer Branding */
+  /* Footer Branding (UPDATED) */
   .footer-brand {
     position: absolute;
     bottom: 10px; right: 20px;
     font-size: 12px;
     opacity: 0.7;
+    color: #444;
   }
 </style>
 </head>
@@ -166,8 +167,9 @@
     <h3>Education</h3>
     <ul id="education"></ul>
 
+    <!-- UPDATED FOOTER -->
     <div class="footer-brand">
-      CorporateMiles.Co | corporatemiles@gmail.com
+      nexasafar@gmail.com
     </div>
   </div>
 
@@ -226,7 +228,7 @@ async function downloadPDF() {
   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  pdf.save("CorporateMiles-CV.pdf");
+  pdf.save("CV.pdf");
 }
 </script>
 

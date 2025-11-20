@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CorporateMiles CV Generator</title>
+<title>Faizan CV Generator</title>
 
 <!-- JS Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -101,7 +101,6 @@
   ul { list-style: none; padding-left: 0; }
   li { margin-bottom: 6px; }
 
-  /* Footer Branding (UPDATED) */
   .footer-brand {
     position: absolute;
     bottom: 10px; right: 20px;
@@ -121,10 +120,15 @@
   <input type="file" id="photoInput" accept="image/*">
   <input type="text" id="nameInput" placeholder="Full Name">
   <input type="text" id="jobInput" placeholder="Job Title">
-  <input type="text" id="iqamaInput" placeholder="Iqama Number">
   <input type="text" id="phoneInput" placeholder="Phone Number">
   <input type="text" id="emailInput" placeholder="Email">
   <input type="text" id="addressInput" placeholder="Address">
+  <input type="text" id="nationalityInput" placeholder="Nationality">
+  <input type="text" id="passportInput" placeholder="Passport Number (Optional)">
+  <input type="text" id="linkedinInput" placeholder="LinkedIn Profile URL">
+  <input type="text" id="languagesInput" placeholder="Languages (e.g. English, Arabic)">
+  <input type="text" id="availabilityInput" placeholder="Availability Status (e.g. Immediately)">
+  <input type="text" id="visaInput" placeholder="Visa Status (e.g. Transferable, Visit Visa)">
 
   <textarea id="summaryInput" placeholder="Professional Summary (multi-line supported)"></textarea>
   <textarea id="educationInput" placeholder="Education (one per line)"></textarea>
@@ -144,13 +148,21 @@
     <img src="https://via.placeholder.com/150" id="photo">
 
     <h2>CONTACT</h2>
-    <p><b>Iqama:</b> <span id="iqama"></span></p>
     <p><b>Phone:</b> <span id="phone"></span></p>
     <p><b>Email:</b> <span id="email"></span></p>
     <p><b>Address:</b> <span id="address"></span></p>
 
+    <h2>PERSONAL</h2>
+    <p><b>Nationality:</b> <span id="nationality"></span></p>
+    <p><b>Passport No:</b> <span id="passport"></span></p>
+    <p><b>Visa Status:</b> <span id="visa"></span></p>
+    <p><b>Availability:</b> <span id="availability"></span></p>
+
     <h2>SKILLS</h2>
     <ul id="skills"></ul>
+
+    <h2>LANGUAGES</h2>
+    <p id="languages"></p>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -167,7 +179,9 @@
     <h3>Education</h3>
     <ul id="education"></ul>
 
-    <!-- UPDATED FOOTER -->
+    <h3>Links</h3>
+    <p><span id="linkedin"></span></p>
+
     <div class="footer-brand">
       nexasafar@gmail.com
     </div>
@@ -194,14 +208,25 @@ function generateCV() {
     reader.readAsDataURL(photoFile);
   }
 
-  // Input fields → Output
-  document.getElementById("name").innerText = document.getElementById("nameInput").value;
-  document.getElementById("job").innerText = document.getElementById("jobInput").value;
-  document.getElementById("iqama").innerText = document.getElementById("iqamaInput").value;
-  document.getElementById("phone").innerText = document.getElementById("phoneInput").value;
-  document.getElementById("email").innerText = document.getElementById("emailInput").value;
-  document.getElementById("address").innerText = document.getElementById("addressInput").value;
-  document.getElementById("summary").innerText = document.getElementById("summaryInput").value;
+  // Basic fields
+  const map = {
+    name: "nameInput",
+    job: "jobInput",
+    phone: "phoneInput",
+    email: "emailInput",
+    address: "addressInput",
+    nationality: "nationalityInput",
+    passport: "passportInput",
+    linkedin: "linkedinInput",
+    availability: "availabilityInput",
+    visa: "visaInput",
+    languages: "languagesInput",
+    summary: "summaryInput"
+  };
+
+  Object.keys(map).forEach(id => {
+    document.getElementById(id).innerText = document.getElementById(map[id]).value;
+  });
 
   // Lists
   const makeList = (inputId, outputId) => {

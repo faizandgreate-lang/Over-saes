@@ -1,651 +1,299 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
 <title>Faizan Khan Curriculum Vitae Generator</title>
 
-<!-- External libs (CDN) -->
+<!-- JS Libs -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- =========================
-     STYLES (all themes + loader)
-     ========================= -->
 <style>
-  :root{
-    --bg:#d9e9ff;
-    --glass-bg: rgba(255,255,255,0.55);
-    --accent:#3483eb;
-    --accent-dark:#0057c2;
-    --muted:#6b7280;
-    --card-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  body {
+    font-family: "Poppins", Arial, sans-serif;
+    margin: 0;
+    background: #d9e9ff;
+    backdrop-filter: blur(8px);
   }
 
-  /* --- Reset --- */
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family:"Poppins",Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: linear-gradient(180deg,#eaf6ff 0%, #f0fbff 100%);
-    -webkit-font-smoothing:antialiased;
-    color:#14213d;
-    min-height:100vh;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:28px 16px;
+  /* Loading Screen */
+  #loader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: white;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    font-weight: bold;
+    animation: fadeOut 2s forwards;
   }
 
-  /* ============ LOADING LAYER ============ */
-  #loaderLayer{
-    position:fixed; inset:0; z-index:9999;
-    display:flex; align-items:center; justify-content:center;
-    background:#ffffff; /* white background during intro */
-    overflow:hidden;
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
   }
 
-  /* loader inner card */
-  .loaderCard{
-    width:520px; max-width:92%;
-    display:flex; flex-direction:column; align-items:center; gap:18px;
-    padding:32px; border-radius:16px;
-    backdrop-filter: blur(6px);
-    box-shadow: 0 20px 50px rgba(8,22,48,0.14);
-    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(246,250,255,0.95));
-    text-align:center;
+  /* Breathing Title */
+  .breathing-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    animation: breathe 3s infinite ease-in-out;
   }
 
-  /* canvas area for pixel F */
-  #fCanvas{ width:240px; height:140px; display:block; margin:6px auto 0; }
-
-  /* Typewriter text */
-  .typewriter{
-    font-weight:700; font-size:20px; color:var(--accent-dark); letter-spacing:0.2px;
-    min-height:28px;
-    white-space:nowrap;
-    overflow:hidden;
+  @keyframes breathe {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.6; transform: scale(1); }
   }
 
-  .subtitle{
-    font-size:13px; color:var(--muted);
+  .form-container {
+    width: 85%;
+    max-width: 900px;
+    margin: 25px auto;
+    padding: 25px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
   }
 
-  /* rotating ring */
-  .ring{
-    width:48px; height:48px; border-radius:50%;
-    display:inline-block; border:4px solid rgba(0,0,0,0.06);
-    border-top-color:var(--accent); animation:spin 1s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* explode fade out */
-  .hideLoader { animation:fadeHide 600ms ease forwards; }
-  @keyframes fadeHide { to { opacity:0; transform:translateY(-8px) scale(.98); visibility:hidden; } }
-
-  /* ============ APP CONTAINER ============ */
-  .app {
-    width:1100px; max-width:100%;
-    display:block; margin:0 auto;
+  label {
+    font-weight: bold;
+    margin-top: 12px;
+    display: block;
   }
 
-  .topbar{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    margin-bottom:18px;
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #90b7ff;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.8);
   }
-
-  .title {
-    font-size:22px; font-weight:800; color:var(--accent-dark);
-    display:flex; gap:12px; align-items:center;
-    animation:breath 3s infinite ease-in-out;
-  }
-  @keyframes breath{
-    0%,100%{transform:scale(1);opacity:.95}
-    50%{transform:scale(1.03);opacity:1}
-  }
-
-  .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
   .btn {
-    background:var(--accent); color:#fff; border:none; padding:10px 14px; border-radius:8px;
-    cursor:pointer; font-weight:700; box-shadow: 0 6px 18px rgba(52,131,235,0.14);
-  }
-  .btn.secondary { background:transparent; color:var(--accent-dark); border:1px solid rgba(4,74,173,0.08); }
-
-  /* container card */
-  .card {
-    background:var(--glass-bg); border-radius:14px; padding:18px; box-shadow:var(--card-shadow);
-  }
-
-  /* grid layout */
-  .grid {
-    display:grid;
-    grid-template-columns: 1fr 420px;
-    gap:18px;
+    padding: 12px 20px;
+    background: #3483eb;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 12px;
   }
 
-  /* form styling */
-  .form-container {
-    padding:18px;
+  /* CV LAYOUT */
+  .cv-container {
+    width: 210mm; 
+    min-height: 297mm;
+    margin: 35px auto;
+    display: none;
+    flex-direction: row;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
   }
 
-  label { display:block; font-weight:700; margin:10px 0 6px; font-size:13px; color:#0f1724; }
-  input[type="text"], input[type="email"], textarea, input[type="file"] {
-    width:100%; padding:10px; border-radius:8px; border:1px solid rgba(10,20,60,0.06);
-    font-size:14px; background:white;
-  }
-  textarea { min-height:88px; resize:vertical; }
-
-  /* small help */
-  .hint { font-size:13px; color:var(--muted); margin-top:6px; }
-
-  /* CV preview / template area */
-  .preview {
-    padding:18px;
-    display:flex; flex-direction:column; gap:12px;
-    align-items:stretch;
+  /* Sidebar */
+  .sidebar {
+    width: 32%;
+    padding: 30px;
+    background: linear-gradient(180deg, #4da3ff, #0057c2);
+    color: #fff;
+    border-radius: 12px 0 0 12px;
   }
 
-  /* CV paper */
-  .cv {
-    width:100%; border-radius:10px; overflow:hidden; background:white; box-shadow:0 10px 30px rgba(0,0,0,0.08);
-    display:flex; gap:0;
-    min-height:520px;
+  .sidebar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    display: block;
+    margin: 10px auto 20px;
   }
 
-  /* sidebar & main */
-  .cv .sidebar { width:34%; padding:28px; background:linear-gradient(180deg,#3b82f6,#0b63c6); color:#fff; }
-  .cv .main { width:66%; padding:28px; color:#0f1724; background:#fff; }
-
-  .cv img.portrait { width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.18); display:block; margin:12px auto; }
-
-  .cv h1 { font-size:26px; margin:4px 0; }
-  .cv h2 { font-size:16px; color:#066; margin:8px 0; }
-  .cv h3 { font-size:14px; margin-top:16px; color:#333; }
-
-  .cv .muted { color: #6b7280; font-size:13px; }
-
-  /* theme variants */
-  .theme-dark .cv .sidebar { background:linear-gradient(180deg,#111827,#0f1724); }
-  .theme-gold .cv .sidebar { background:linear-gradient(180deg,#ffd54a,#f59e0b); color:#082; }
-  .theme-white .cv .sidebar { background:linear-gradient(180deg,#ecf7ff,#dff6ff); color:#034; }
-  .theme-blue .cv .sidebar { background:linear-gradient(180deg,#3b82f6,#0b63c6); color:#fff; }
-
-  /* responsive */
-  @media (max-width:1000px){
-    .grid { grid-template-columns: 1fr; }
-    .cv { min-height:420px; flex-direction:column; }
-    .cv .sidebar{ width:100% }
-    .cv .main{ width:100% }
+  .main {
+    width: 68%;
+    padding: 40px;
   }
 
-  /* tiny styles */
-  .field-row { display:flex; gap:10px; align-items:center; }
-  .small { font-size:12px; color:var(--muted); }
+  .main h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+  }
 
-  /* auto-fill + theme select area */
-  .panel-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .main h3 {
+    background: rgba(90,150,255,0.2);
+    padding: 8px;
+    border-left: 5px solid #0057c2;
+    margin-top: 25px;
+    font-size: 18px;
+  }
 
-  /* download button style */
-  #downloadBtn { margin-top:8px; }
-
+  ul { list-style: none; padding-left: 0; }
+  li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
 
-<!-- ====================== LOADER LAYER ====================== -->
-<div id="loaderLayer" aria-hidden="false">
-  <div class="loaderCard" role="dialog" aria-label="Loading Faizan CV Builder">
-    <!-- Canvas pixel 'F' -->
-    <canvas id="fCanvas" width="480" height="140" aria-hidden="true"></canvas>
+<!-- LOADING SCREEN -->
+<div id="loader">Welcome to the Faizan Projects...</div>
 
-    <!-- Typewriter -->
-    <div class="typewriter" id="typewriterText" aria-live="polite"></div>
-    <div class="subtitle">Smart CV Builder Powered by Faizan</div>
+<!-- ===== INPUT FORM ===== -->
+<div class="form-container">
+  <h2 class="breathing-title">Faizan Khan Curriculum Vitae Generator</h2>
 
-    <!-- rotating circle -->
-    <div style="margin-top:12px;">
-      <div class="ring" aria-hidden="true"></div>
-    </div>
-  </div>
+  <label>Upload Photo</label>
+  <input type="file" id="photoInput" accept="image/*">
+
+  <label>Full Name</label>
+  <input type="text" id="nameInput">
+
+  <label>Position Applied For</label>
+  <input type="text" id="jobInput" value="Applying for">
+
+  <label>Phone Number</label>
+  <input type="text" id="phoneInput" value="+91">
+
+  <label>Email Address</label>
+  <input type="text" id="emailInput">
+
+  <label>Residential Address</label>
+  <input type="text" id="addressInput">
+
+  <label>Nationality</label>
+  <input type="text" id="nationalityInput" value="Indian">
+
+  <label>Passport Number</label>
+  <input type="text" id="passportInput">
+
+  <label>Languages</label>
+  <input type="text" id="languagesInput" value="English, Hindi">
+
+  <label>Professional Summary</label>
+  <textarea id="summaryInput"></textarea>
+
+  <label>Work Experience (each line = one point)</label>
+  <textarea id="experienceInput">• </textarea>
+
+  <label>Education (each line = one point)</label>
+  <textarea id="educationInput">Intermediate from State Board of Intermediate Education, India</textarea>
+
+  <label>Skills (each line = one skill)</label>
+  <textarea id="skillsInput"></textarea>
+
+  <button class="btn" onclick="generateCV()">Generate CV</button>
 </div>
 
-<!-- ====================== MAIN APP ====================== -->
-<div class="app" id="appRoot" style="opacity:0; transform:translateY(8px); transition:all .45s ease;">
-  <div class="topbar">
-    <div class="title">Faizan Khan Curriculum Vitae Generator</div>
-    <div class="controls">
-      <div class="panel-actions">
-        <button class="btn" id="autoFillBtn" title="Auto fill example data">Auto-fill</button>
-        <select id="themeSelect" title="Choose CV theme" class="secondary" style="padding:8px;border-radius:8px;border:1px solid rgba(10,20,60,0.06)">
-          <option value="theme-blue">Blue Glass</option>
-          <option value="theme-white">Clean White</option>
-          <option value="theme-gold">Gold Pro</option>
-          <option value="theme-dark">Dark</option>
-        </select>
-        <button class="btn secondary" id="showPreviewBtn">Show/Hide Preview</button>
-      </div>
-    </div>
+<!-- CV TEMPLATE -->
+<div id="cv" class="cv-container">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <img src="https://via.placeholder.com/150" id="photo">
+
+    <h2>CONTACT</h2>
+    <p><b>Phone:</b> <span id="phone"></span></p>
+    <p><b>Email:</b> <span id="email"></span></p>
+    <p><b>Address:</b> <span id="address"></span></p>
+
+    <h2>PERSONAL DETAILS</h2>
+    <p><b>Nationality:</b> <span id="nationality"></span></p>
+    <p><b>Passport:</b> <span id="passport"></span></p>
+
+    <h2>SKILLS</h2>
+    <ul id="skills"></ul>
+
+    <h2>LANGUAGES</h2>
+    <p id="languages"></p>
   </div>
 
-  <div class="grid">
-    <!-- LEFT: form -->
-    <div class="card form-container">
-      <h3 style="margin-bottom:10px">Input Details</h3>
+  <!-- MAIN -->
+  <div class="main">
+    <h1 id="name"></h1>
+    <p style="font-size:16px; color:#0057c2;"><b id="job"></b></p>
 
-      <label>Upload Photo</label>
-      <input type="file" id="photoInput" accept="image/*">
+    <h3>Professional Summary</h3>
+    <p id="summary"></p>
 
-      <label>Full Name</label>
-      <input id="nameInput" type="text" placeholder="e.g. Faizan Khan">
+    <h3>Work Experience</h3>
+    <ul id="experience"></ul>
 
-      <label>Position Applied For</label>
-      <input id="jobInput" type="text" placeholder="e.g. Chef - CDP">
-
-      <div class="field-row">
-        <div style="flex:1">
-          <label>Phone</label>
-          <input id="phoneInput" type="text" placeholder="+966 5xxxxxxxx">
-        </div>
-        <div style="width:150px">
-          <label>Nationality</label>
-          <input id="nationalityInput" type="text" placeholder="e.g. Indian">
-        </div>
-      </div>
-
-      <label>Email</label>
-      <input id="emailInput" type="email" placeholder="you@example.com">
-
-      <label>Address</label>
-      <input id="addressInput" type="text" placeholder="Current address">
-
-      <label>Passport Number</label>
-      <input id="passportInput" type="text" placeholder="Optional">
-
-      <label>Languages (comma separated)</label>
-      <input id="languagesInput" type="text" placeholder="English, Arabic">
-
-      <label>Professional Summary</label>
-      <textarea id="summaryInput" placeholder="Write a short professional summary..."></textarea>
-
-      <label>Work Experience (one item per line)</label>
-      <textarea id="experienceInput" placeholder="e.g. CDP at 'Hotel X' (2019-2024)"></textarea>
-
-      <label>Education (one per line)</label>
-      <textarea id="educationInput" placeholder="e.g. Intermediate from ..."></textarea>
-
-      <label>Skills (one per line)</label>
-      <textarea id="skillsInput" placeholder="e.g. Tandoori specialist"></textarea>
-
-      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn" onclick="generateCV()">Generate CV</button>
-        <button class="btn secondary" id="clearBtn">Clear</button>
-        <button class="btn secondary" id="downloadBtn" style="display:none" onclick="downloadPDF()">Download PDF</button>
-      </div>
-
-      <p class="hint">Tip: Use <strong>Auto-fill</strong> to see a fully populated sample quickly.</p>
-    </div>
-
-    <!-- RIGHT: preview -->
-    <div class="card preview" id="previewArea" style="display:block;">
-      <h3 style="margin-bottom:6px">Live Preview</h3>
-
-      <div id="cvWrapper" class="cv theme-blue"> <!-- theme class toggled below -->
-        <div class="sidebar">
-          <img id="photo" class="portrait" src="https://via.placeholder.com/150" alt="profile photo">
-          <div style="text-align:center; margin-top:8px">
-            <div id="phone" class="muted"></div>
-            <div id="email" class="muted"></div>
-            <div id="address" class="muted"></div>
-          </div>
-
-          <h3 style="margin-top:18px">Personal</h3>
-          <div class="muted"><b>Nationality:</b> <span id="nationality"></span></div>
-          <div class="muted"><b>Passport:</b> <span id="passport"></span></div>
-
-          <h3 style="margin-top:18px">Skills</h3>
-          <ul id="skills" style="list-style:none; padding-left:0; margin-top:6px"></ul>
-
-          <h3 style="margin-top:12px">Languages</h3>
-          <div id="languages" class="muted"></div>
-        </div>
-
-        <div class="main">
-          <h1 id="name" style="margin-bottom:6px">Your Name</h1>
-          <h2 id="job" style="margin-top:0; color:var(--accent-dark)">Position</h2>
-
-          <h3>Professional Summary</h3>
-          <p id="summary" class="muted"></p>
-
-          <h3>Work Experience</h3>
-          <ul id="experience" style="list-style:disc; margin-left:18px;"></ul>
-
-          <h3>Education</h3>
-          <ul id="education" style="list-style:disc; margin-left:18px;"></ul>
-        </div>
-      </div>
-
-      <p class="small" style="margin-top:12px">Preview updates as you type. Use "Generate CV" to prepare the printable PDF.</p>
-    </div>
+    <h3>Education</h3>
+    <ul id="education"></ul>
   </div>
+
 </div>
 
-<!-- ========================= SCRIPTS ========================= -->
+<center>
+  <button class="btn" id="downloadBtn" style="display:none;" onclick="downloadPDF()">Download PDF</button>
+</center>
+
 <script>
-/* ================= LOADER ANIMATION (pixel 'F' using canvas particles) ================= */
-(function(){
-  const canvas = document.getElementById('fCanvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width;
-  const H = canvas.height;
+window.onload = () => {
+  setTimeout(() => {
+    document.getElementById("loader").style.display = "none";
+  }, 2000);
+};
 
-  // draw a pixel-font 'F' into an offscreen canvas then sample points
-  const off = document.createElement('canvas');
-  off.width = W; off.height = H;
-  const oc = off.getContext('2d');
+function generateCV() {
+  document.getElementById("cv").style.display = "flex";
+  document.getElementById("downloadBtn").style.display = "inline-block";
 
-  // pixel font settings (we will draw large 'F' using a monospace and sample)
-  const fontSize = 120;
-  oc.fillStyle = "#000";
-  oc.textBaseline = "middle";
-  oc.textAlign = "center";
-  oc.font = `bold ${fontSize}px monospace`;
-  oc.fillText("F", W/2, H/2 + 6);
-
-  // sample pixels to get dot coordinates
-  const img = oc.getImageData(0,0,W,H).data;
-  const pts = [];
-  for(let y=0;y<H;y+=3){
-    for(let x=0;x<W;x+=3){
-      const idx = (y*W + x)*4;
-      if(img[idx+3] > 128){ // alpha > 128 (pixel exists)
-        pts.push({x, y});
-      }
-    }
+  const photo = document.getElementById("photoInput").files[0];
+  if (photo) {
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById("photo").src = e.target.result;
+    reader.readAsDataURL(photo);
   }
 
-  // create particles that fly and settle into pts
-  const particles = [];
-  function rand(min,max){ return Math.random()*(max-min)+min }
-
-  // start particles off-canvas and let them fly to target
-  pts.forEach(p=>{
-    particles.push({
-      tx: p.x,
-      ty: p.y,
-      x: rand(-80, W+80),
-      y: rand(-120, -20),
-      vx: 0, vy: 0,
-      r: 1.8,
-      settled:false,
-      delay: rand(0, 700)
-    });
-  });
-
-  // animation timeline
-  let start = null;
-  let exploded = false;
-
-  function step(ts){
-    if(!start) start = ts;
-    const t = ts - start;
-
-    // clear
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle = "#0b63c6";
-
-    // draw background subtle grid or nothing
-    // animate particles towards target (ease)
-    particles.forEach((p,i)=>{
-      if(t < p.delay) {
-        // not started yet: show faint trailing
-        const fx = p.x + Math.sin((t+p.delay)/40 + i)*2;
-        const fy = p.y + Math.cos((t+p.delay)/40 + i)*2;
-        ctx.globalAlpha = 0.08;
-        ctx.fillRect(fx, fy, p.r, p.r);
-        ctx.globalAlpha = 1;
-        return;
-      }
-      // progress param
-      const prog = Math.min(1, (t - p.delay) / 700);
-      // easing
-      const ease = (--prog)*prog*prog + 1; // easeOutCubic
-      // interpolate start pos -> target
-      p.x = p.x + (p.tx - p.x) * ease * 0.12;
-      p.y = p.y + (p.ty - p.y) * ease * 0.12;
-      // draw
-      ctx.beginPath();
-      ctx.fillStyle = "#0b63c6";
-      ctx.globalAlpha = 0.98;
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
-    });
-
-    // end condition: when most particles near their target, trigger explode
-    if(!exploded){
-      const near = particles.filter(p=>Math.hypot(p.x-p.tx,p.y-p.ty) < 2.6).length;
-      if(near > particles.length * 0.82){
-        // explode after short delay
-        exploded = true;
-        setTimeout(()=>explodeParticles(), 350);
-      }
-    }
-
-    if(!exploded) requestAnimationFrame(step);
-  }
-
-  function explodeParticles(){
-    // apply random velocities and animate outwards then fade
-    particles.forEach(p=>{
-      p.vx = (Math.random()-0.5)*6;
-      p.vy = (Math.random()-0.8)*6;
-      p.r = 1.6;
-    });
-
-    // explode animation loop
-    let exStart = null;
-    function exStep(ts){
-      if(!exStart) exStart = ts;
-      const tt = ts - exStart;
-      ctx.clearRect(0,0,W,H);
-      particles.forEach(p=>{
-        p.x += p.vx; p.y += p.vy;
-        // gravity-ish
-        p.vy += 0.18;
-        p.vx *= 0.98;
-        p.vy *= 0.99;
-        // fade radius slightly
-        p.r *= 0.998;
-        ctx.beginPath();
-        ctx.fillStyle = "#0b63c6";
-        ctx.globalAlpha = Math.max(0, 1 - (tt/1200) - (p.r*0.05));
-        ctx.arc(p.x, p.y, Math.max(0.6,p.r), 0, Math.PI*2);
-        ctx.fill();
-      });
-      if(tt < 1200) requestAnimationFrame(exStep);
-      else {
-        // after explosion, reveal typewriter and loader will fade after typed text completes
-        startTypewriterSequence();
-      }
-    }
-    requestAnimationFrame(exStep);
-  }
-
-  // start initial
-  requestAnimationFrame(step);
-
-  // --- typewriter sequence and reveal app ---
-  const typeEl = document.getElementById('typewriterText');
-  const messages = ["Welcome to Faizan Projects", "Smart CV Builder Powered by Faizan"];
-  function startTypewriterSequence(){
-    let i=0;
-    function typeMsg(msg, cb){
-      typeEl.textContent = "";
-      let idx = 0;
-      const interval = setInterval(()=>{
-        typeEl.textContent += msg[idx++] || "";
-        if(idx > msg.length){
-          clearInterval(interval);
-          setTimeout(cb, 650);
-        }
-      }, 45);
-    }
-    function next(){
-      if(i < messages.length){
-        typeMsg(messages[i++], next);
-      } else {
-        // finished typing -> keep for a bit then hide loader
-        setTimeout(hideLoader, 700);
-      }
-    }
-    next();
-  }
-
-  // hide loader and show app
-  function hideLoader(){
-    const layer = document.getElementById('loaderLayer');
-    layer.classList.add('hideLoader');
-    // move out and then remove from DOM
-    setTimeout(()=>{
-      layer.style.display = 'none';
-      document.getElementById('appRoot').style.opacity = 1;
-      document.getElementById('appRoot').style.transform = 'translateY(0)';
-    }, 650);
-  }
-
-})(); // end loader IIFE
-
-/* ================= APP LOGIC (CV generator + themes + autofill) ================= */
-
-(function(){
-  // elements
-  const photoInput = document.getElementById('photoInput');
-  const photoPreview = document.getElementById('photo');
-  const inputs = ['name','job','phone','email','address','passport','languages','summary','experience','education','skills'];
-  const elems = {};
-  inputs.forEach(k => elems[k] = document.getElementById(k + 'Input') || document.getElementById(k));
-
-  // wire preview update on input
-  function syncPreview(){
-    document.getElementById('name').innerText = document.getElementById('nameInput').value || "Your Name";
-    document.getElementById('job').innerText = document.getElementById('jobInput').value || "Position Applied";
-    document.getElementById('phone').innerText = document.getElementById('phoneInput').value || "";
-    document.getElementById('email').innerText = document.getElementById('emailInput').value || "";
-    document.getElementById('address').innerText = document.getElementById('addressInput').value || "";
-    document.getElementById('nationality').innerText = document.getElementById('nationalityInput').value || "";
-    document.getElementById('passport').innerText = document.getElementById('passportInput').value || "";
-    document.getElementById('languages').innerText = document.getElementById('languagesInput').value || "";
-
-    document.getElementById('summary').innerText = document.getElementById('summaryInput').value || "";
-    // lists
-    const mkList = (srcId, targetId) => {
-      const raw = document.getElementById(srcId).value || "";
-      const arr = raw.split(/\n/).map(s=>s.trim()).filter(Boolean);
-      document.getElementById(targetId).innerHTML = arr.map(it => `<li>${it}</li>`).join('');
-    };
-    mkList('skillsInput','skills');
-    mkList('experienceInput','experience');
-    mkList('educationInput','education');
-  }
-
-  // attach listeners to update preview live
-  ['nameInput','jobInput','phoneInput','emailInput','addressInput','nationalityInput','passportInput','languagesInput','summaryInput','skillsInput','experienceInput','educationInput']
-  .forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.addEventListener('input', syncPreview);
-  });
-
-  // photo preview
-  photoInput.addEventListener('change', (ev)=>{
-    const f = ev.target.files && ev.target.files[0];
-    if(!f) return;
-    const r = new FileReader();
-    r.onload = e => { photoPreview.src = e.target.result; };
-    r.readAsDataURL(f);
-  });
-
-  // Generate CV (keeps preview updated and shows download button)
-  window.generateCV = function generateCV(){
-    syncPreview();
-    document.getElementById('cvWrapper').classList.remove('hidden');
-    document.getElementById('downloadBtn').style.display = 'inline-block';
-    // small flash to show success
-    const btn = document.getElementById('downloadBtn');
-    btn.style.transform = 'translateY(-2px)';
-    setTimeout(()=> btn.style.transform = 'translateY(0)', 160);
+  const map = {
+    name: "nameInput",
+    job: "jobInput",
+    phone: "phoneInput",
+    email: "emailInput",
+    address: "addressInput",
+    nationality: "nationalityInput",
+    passport: "passportInput",
+    languages: "languagesInput",
+    summary: "summaryInput"
   };
 
-  // Download as PDF
-  window.downloadPDF = async function downloadPDF(){
-    const { jsPDF } = window.jspdf;
-    const cv = document.getElementById('cvWrapper');
-    // use html2canvas on the .cv element (the paper)
-    const paper = document.querySelector('.cv');
-    if(!paper) return alert('No CV to download. Click Generate CV first.');
-    // temporarily remove transform for accurate rendering
-    const canvas = await html2canvas(paper, { scale:2, useCORS:true, backgroundColor: null });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p','mm','a4');
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = (canvas.height * pdfW) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
-    pdf.save((document.getElementById('nameInput').value || 'CV') + '.pdf');
+  Object.keys(map).forEach(id => {
+    document.getElementById(id).innerText = document.getElementById(map[id]).value;
+  });
+
+  const makeList = (inputId, outputId) => {
+    const items = document.getElementById(inputId).value.split("\n");
+    document.getElementById(outputId).innerHTML =
+      items.filter(e => e.trim()).map(e => `<li>${e}</li>`).join("");
   };
 
-  // Clear button
-  document.getElementById('clearBtn').addEventListener('click', ()=>{
-    ['photoInput','nameInput','jobInput','phoneInput','emailInput','addressInput','nationalityInput','passportInput','languagesInput','summaryInput','skillsInput','experienceInput','educationInput'].forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      if(el.type === 'file') el.value = '';
-      else el.value = '';
-    });
-    // restore placeholders / defaults
-    photoPreview.src = 'https://via.placeholder.com/150';
-    syncPreview();
-    document.getElementById('downloadBtn').style.display = 'none';
-  });
+  makeList("skillsInput", "skills");
+  makeList("educationInput", "education");
+  makeList("experienceInput", "experience");
+}
 
-  // Auto-fill example data
-  document.getElementById('autoFillBtn').addEventListener('click', ()=>{
-    document.getElementById('nameInput').value = 'Faiez Khan';
-    document.getElementById('jobInput').value = 'Chef - Indian Cuisine Specialist (CDP)';
-    document.getElementById('phoneInput').value = '+966 58 280 7659';
-    document.getElementById('emailInput').value = 'faizkhan04.1995@gmail.com';
-    document.getElementById('addressInput').value = 'Jeddah, Saudi Arabia';
-    document.getElementById('nationalityInput').value = 'Indian';
-    document.getElementById('passportInput').value = 'U6475645';
-    document.getElementById('languagesInput').value = 'English, Hindi';
-    document.getElementById('summaryInput').value = 'Seeking a suitable job position where my past and varied experience will contribute to organizational success. Experienced in Indian cuisine and kitchen supervision.';
-    document.getElementById('experienceInput').value = 'CDP at Lavesta Resort, 2022-2023\nCommie at Six Senses, 2021-2022\nCommie 1 at Raj Palace Hotel, 2015-2017';
-    document.getElementById('educationInput').value = 'Intermediate - State Board of Intermediate Education, India';
-    document.getElementById('skillsInput').value = 'Tandoori specialist\nInternational buffet\nMenu planning\nInventory control\nKitchen safety';
-    // set a sample portrait if possible (optional)
-    photoPreview.src = 'https://i.ibb.co/0jS6m6q/sample-avatar.png';
-    syncPreview();
-    // show download button
-    document.getElementById('downloadBtn').style.display = 'inline-block';
-  });
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const cv = document.getElementById("cv");
+  const canvas = await html2canvas(cv, { scale: 2 });
+  const img = canvas.toDataURL("image/png");
 
-  // Theme select
-  const themeSelect = document.getElementById('themeSelect');
-  themeSelect.addEventListener('change', function(){
-    const wrap = document.getElementById('cvWrapper');
-    // remove known theme classes
-    wrap.classList.remove('theme-blue','theme-white','theme-gold','theme-dark');
-    wrap.classList.add(this.value);
-  });
+  const pdf = new jsPDF("p", "mm", "a4");
+  const w = pdf.internal.pageSize.getWidth();
+  const h = (canvas.height * w) / canvas.width;
 
-  // show/hide preview
-  document.getElementById('showPreviewBtn').addEventListener('click', ()=>{
-    const a = document.getElementById('previewArea');
-    a.style.display = (a.style.display==='none') ? 'block' : 'none';
-  });
-
-  // initial sync
-  syncPreview();
-})(); // end app IIFE
-
+  pdf.addImage(img, "PNG", 0, 0, w, h);
+  pdf.save("CV.pdf");
+}
 </script>
+
 </body>
 </html>
